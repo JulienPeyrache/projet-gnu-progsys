@@ -10,3 +10,9 @@
 #include "Mv.h"
 #include "Grep.h"
 #include "Kill.h"
+
+
+
+int main(){
+    return 0;
+}
