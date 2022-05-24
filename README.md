@@ -6,3 +6,9 @@ Ce projet est co-réalisé par Yanis Trouyet et moi-même, Julien Peyrache.
 
 Liste de tous les appels systèmes qui nous seront utiles au cours de ce projet.
 http://pwet.fr/man/linux/appels_systemes/(offset)/100/
+
+
+Options possibles à creuser : 
+
+rm -r supprime non pas les fichiers, mais les répertoires
+cd avec chdir qui ermet de se déplacer dans l'arborescence
