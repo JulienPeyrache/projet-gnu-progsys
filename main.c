@@ -81,10 +81,11 @@ int tee(char *filename){
 int main()
 {
     printf("%s", "Vous pouvez démarrer une ligne de commande:");
-    char *commande;
-    scanf("%s", commande);
+    char *commande = "begin";
+    
     while(commande != "quit")
     {
+    scanf("%s", commande);
     char* verif;
     if(memcpy(verif, &commande[0], 3) == "ls ")
     {
