@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include <sys/stat.h>
 #include <signal.h>
 
@@ -24,7 +24,7 @@ int echo(char* blabla){
 int grep (char *filtre){
     //Lire ce qu'il y a dans stdin, filtrer les champs qui nous concernent avec le filtre et les réécrire dans stdout.
     char chaine[100];
-    
+
     while (fgets(chaine, 100, stdin) != NULL){
         if (strstr(chaine, filtre) != NULL){
             printf("%s", chaine);
@@ -81,57 +81,82 @@ int tee(char *filename){
 int main()
 {
     printf("%s", "Vous pouvez démarrer une ligne de commande:");
-    char *commande = "begin";
-    
+    char *commande;
+    scanf("%s", commande);
     while(commande != "quit")
     {
-    scanf("%s", commande);
     char* verif;
-    if(memcpy(verif, &commande[0], 3) == "ls ")
+    if(strcmp(&commande, "ls ", 3) == 0)
     {
         char* subcom;
 
-        memcpy(subcom, &commande[3], sizeof(commande)-3);
+        memcpy(subcom, &commande[3], strlen(commande)-3);
         ls(subcom);
 
     }
 
 
-    else if(memcpy(verif, &commande[0], 5) == "echo ")
+    else if(strcmp(&commande, "echo ", 5) == 0)
     {
         char* subcom;
 
-        memcpy(subcom, &commande[5], sizeof(commande)-5);
+        memcpy(subcom, &commande[5], strlen(commande)-5);
         echo(subcom);
     }
 
-    else if(memcpy(verif, &commande[0], 3) == "rm ")
+    else if(strcmp(&commande, "rm ", 3) == 0)
     {
         char* subcom;
 
-        memcpy(subcom, &commande[3], sizeof(commande)-3);
+        memcpy(subcom, &commande[3], strlen(commande)-3);
         rm(subcom);
     }
 
-    else if(memcpy(verif, &commande[0], 4) == "tee ")
+    else if(strcmp(&commande, "tee ", 4) == 0)
     {
         char* subcom;
 
-        memcpy(subcom, &commande[4], sizeof(commande)-4);
+        memcpy(subcom, &commande[4], strlen(commande)-4);
         tee(subcom);
     }
 
-    else if(memcpy(verif, &commande[0], 4) == "cat ")
+    else if(strcmp(&commande, "cat ", 4) == 0)
     {
         char* subcom;
 
-        memcpy(subcom, &commande[4], sizeof(commande)-4);
+        memcpy(subcom, &commande[4], strlen(commande)-4);
         cat(subcom);
     }
 
-    else if(memcpy(verif, &commande[0], 5) == "kill ")
+    else if(strcmp(&commande, "kill ", 5) == 0)
     {
         char* subcom;
+
+        if (&commande[5] != "-")
+            {
+                memcpy(subcom, &commande[5], strlen(commande) - 5);
+                kill(subcom, 15);
+            }
+    }
+
+    else if(strcmp(&commande, "mv ", 3) == 0)
+    {
+        int espace;
+        for (int i = 4; i < strlen(commande); i++)
+        {
+            if(strcmp(&commande[i], " ", 1) == 0)
+            {
+                espace = i
+            }
+        }
+
+
+        char* subcom1;
+        char* subcom2;
+
+        memcpy(subcom1, &commande[3], espace - 3);
+        memcpy(subcom2, &commande[espace + 1], strlen(commande) - espace - 1);
+        mv(subcom1, subcom2);
     }
     }
     return 0;
