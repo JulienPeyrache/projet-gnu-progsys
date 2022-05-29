@@ -15,9 +15,15 @@
 
 
 
-int main(int a, char **commande1){
-    char *commande = commande1[0];
-    if((commande[0] == 'l') && (commande[1] =='s'))
+int main()
+{
+    printf("%s", "Vous pouvez démarrer une ligne de commande:");
+    char *commande;
+    scanf(commande);
+    while(commande != "quit")
+    {
+    char verif;
+    if(memcpy(verif, &commande[0], 3) == "ls ")
     {
         char* subcom;
 
@@ -26,7 +32,8 @@ int main(int a, char **commande1){
 
     }
 
-    else if((commande[0] == 'e') && (commande[1] == 'c') && (commande[2] == 'h') && (commande[3] == 'o'))
+
+    else if(memcpy(verif, &commande[0], 5) == "echo ")
     {
         char* subcom;
 
@@ -34,7 +41,7 @@ int main(int a, char **commande1){
         echo(subcom);
     }
 
-    else if((commande[0] == 'r') && (commande[1] == 'm'))
+    else if(memcpy(verif, &commande[0], 3) == "rm ")
     {
         char* subcom;
 
@@ -42,12 +49,27 @@ int main(int a, char **commande1){
         rm(subcom);
     }
 
-    else if((commande[0] == 't') && (commande[1] == 'e') && (commande[2] == 'e'))
+    else if(memcpy(verif, &commande[0], 4) == "tee ")
     {
         char* subcom;
 
         memcpy(subcom, &commande[4], sizeof(commande)-4);
         tee(subcom);
     }
+
+    else if(memcpy(verif, &commande[0], 4) == "cat ")
+    {
+        char subcom;
+
+        memcpy(subcom, &commande[4], sizeof(commande)-4);
+        cat(subcom);
+    }
+
+    else if(memcpy(verif, &commande[0], 5) == "kill ")
+    {
+        char subcom;
+    }
+    }
     return 0;
 }
+
