@@ -19,7 +19,7 @@ int main()
 {
     printf("%s", "Vous pouvez démarrer une ligne de commande:");
     char *commande;
-    scanf(commande);
+    scanf("%s", &commande);
     while(commande != "quit")
     {
     char verif;
