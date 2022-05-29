@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "Ls.h"
 
 int ls(char* path){
     FILE* fp = fopen(path, "r");

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "Tee.h"
 int tee(char *filename){
     //read stdin, put it in a file and in stdout
     FILE *fp = fopen(filename, "w");

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "Cat.h"
 
 int cat(char *file_title){
     FILE *fd = fopen(file_title, "r");
