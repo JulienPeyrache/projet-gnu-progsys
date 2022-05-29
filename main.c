@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-int cat(char *file_title){
+int cat(char* file_title){
     FILE *fd = fopen(file_title, "r");
     char c;
     while((c = fgetc(fd)) != EOF){
@@ -19,13 +19,17 @@ int cat(char *file_title){
 
 int echo(char* blabla){
     printf("%s", blabla);
+    return 0;
 }
 
 int grep (char *filtre){
     //Lire ce qu'il y a dans stdin, filtrer les champs qui nous concernent avec le filtre et les réécrire dans stdout.
     char chaine[100];
+    FILE* stdin_custom = fopen("/dev/stdin", "r");
+    FILE* stdout_custom = fopen("/dev/stdout", "w");
 
-    while (fgets(chaine, 100, stdin) != NULL){
+
+    while (fgets(chaine, 100, stdin_custom) != NULL){
         if (strstr(chaine, filtre) != NULL){
             printf("%s", chaine);
         }
@@ -35,6 +39,7 @@ int grep (char *filtre){
 
 int kill_maison(pid_t pid, int sig){
     kill(pid, sig);
+    return 0;
 }
 
 int ls(char* path){
@@ -54,14 +59,46 @@ int ls(char* path){
 
 int mkdir_maison(const char *pathname, mode_t mode){
     mkdir(pathname, mode);
+    return 0;
 }
 
 int mv (char* source, char* destination){
     rename(source, destination);
+    return 0;
+}
+
+struct arguments{
+    char** arg;
+    int nbarg;
+};
+typedef struct arguments arguments;
+
+char* slice(char* chaine, int longueur){
+    char* chaine_finale = malloc(longueur);
+    strncpy(chaine_finale, chaine, longueur);
+    return chaine_finale;
+}
+
+arguments decomp (char* commande){
+    arguments args;
+    args.nbarg = 0;
+    args.arg = malloc(sizeof(char*));
+    char* tmp = malloc(sizeof(char*));
+    strcpy(tmp, commande);
+    char* token = strtok(tmp, " ");
+    while(token != NULL){
+        args.nbarg++;
+        args.arg = realloc(args.arg, args.nbarg * sizeof(char*));
+        args.arg[args.nbarg - 1] = malloc(sizeof(char) * strlen(token));
+        strcpy(args.arg[args.nbarg - 1], token);
+        token = strtok(NULL, " ");
+    }
+    return args;
 }
 
 int rm (const char *pathname){
     rmdir(pathname);
+    return 0;
 }
 
 int tee(char *filename){
@@ -81,83 +118,100 @@ int tee(char *filename){
 int main()
 {
     printf("%s", "Vous pouvez démarrer une ligne de commande:");
-    char *commande;
-    scanf("%s", commande);
-    while(commande != "quit")
-    {
-    char* verif;
-    if(strcmp(&commande, "ls ", 3) == 0)
-    {
-        char* subcom;
-
-        memcpy(subcom, &commande[3], strlen(commande)-3);
-        ls(subcom);
-
-    }
-
-
-    else if(strcmp(&commande, "echo ", 5) == 0)
-    {
-        char* subcom;
-
-        memcpy(subcom, &commande[5], strlen(commande)-5);
-        echo(subcom);
-    }
-
-    else if(strcmp(&commande, "rm ", 3) == 0)
-    {
-        char* subcom;
-
-        memcpy(subcom, &commande[3], strlen(commande)-3);
-        rm(subcom);
-    }
-
-    else if(strcmp(&commande, "tee ", 4) == 0)
-    {
-        char* subcom;
-
-        memcpy(subcom, &commande[4], strlen(commande)-4);
-        tee(subcom);
-    }
-
-    else if(strcmp(&commande, "cat ", 4) == 0)
-    {
-        char* subcom;
-
-        memcpy(subcom, &commande[4], strlen(commande)-4);
-        cat(subcom);
-    }
-
-    else if(strcmp(&commande, "kill ", 5) == 0)
-    {
-        char* subcom;
-
-        if (&commande[5] != "-")
+    char* commande = "begin";
+    while(strcmp(commande,"quit")!=0){
+        printf("%s", ">");
+        scanf("%s", commande);
+        arguments args = decomp(commande);
+        if(strcmp(args.arg[0], "ls") == 0){
+            if (args.nbarg != 2)
             {
-                memcpy(subcom, &commande[5], strlen(commande) - 5);
-                kill(subcom, 15);
+                printf("%s", "Erreur: nombre d'arguments incorrect");
             }
-    }
-
-    else if(strcmp(&commande, "mv ", 3) == 0)
-    {
-        int espace;
-        for (int i = 4; i < strlen(commande); i++)
-        {
-            if(strcmp(&commande[i], " ", 1) == 0)
+            else
             {
-                espace = i
+                ls(args.arg[1]);
             }
         }
-
-
-        char* subcom1;
-        char* subcom2;
-
-        memcpy(subcom1, &commande[3], espace - 3);
-        memcpy(subcom2, &commande[espace + 1], strlen(commande) - espace - 1);
-        mv(subcom1, subcom2);
-    }
+        else if(strcmp(args.arg[0], "mkdir") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                mkdir_maison(args.arg[1], 0777);
+            }
+        }
+        else if(strcmp(args.arg[0], "mv") == 0){
+            if (args.nbarg != 3)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                mv(args.arg[1], args.arg[2]);
+            }
+        }
+        else if(strcmp(args.arg[0], "rm") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                rm(args.arg[1]);
+            }
+        }
+        else if(strcmp(args.arg[0], "tee") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                tee(args.arg[1]);
+            }
+        }
+        else if(strcmp(args.arg[0], "cat") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                cat(args.arg[1]);
+            }
+        } else if(strcmp(args.arg[0], "echo") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                echo(args.arg[1]);
+            }
+        } else if(strcmp(args.arg[0], "grep") == 0){
+            if (args.nbarg != 2)
+            {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+            else
+            {
+                grep(args.arg[1]);
+            }
+        } else if(strcmp(args.arg[0], "kill") == 0){    //kill(pid, sig)
+            if ((args.nbarg == 4)&&(strcmp(args.arg[1], "-s") == 0)){
+                kill_maison(atoi(args.arg[3]), atoi(args.arg[2]));
+            } else if (args.nbarg == 3) {
+                kill_maison(atoi(args.arg[2]), 15);
+            } else {
+                printf("%s", "Erreur: nombre d'arguments incorrect");
+            }
+        }
+        else{
+            printf("%s", "Erreur: commande inconnue");
+        }
     }
     return 0;
 }
