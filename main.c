@@ -22,6 +22,26 @@ int echo(char* blabla){
     return 0;
 }
 
+
+int mkdir_maison(const char *pathname, mode_t mode){
+    mkdir(pathname, mode);
+    return 0;
+}
+
+int mv (char* source, char* destination){
+    rename(source, destination);
+    return 0;
+}
+
+int rm (const char *pathname){
+    rmdir(pathname);
+    return 0;
+}
+int kill_maison(pid_t pid, int sig){
+    kill(pid, sig);
+    return 0;
+}
+
 int grep (char *filtre, char option){
     //Lire ce qu'il y a dans stdin, filtrer les champs qui nous concernent avec le filtre et les réécrire dans stdout.
     char chaine[100];
@@ -58,13 +78,8 @@ int grep (char *filtre, char option){
             }
         }
     fclose(stdin_custom);
-    stdout = stdin_custom;
+    stdout = stdout_custom;
     fclose(stdout_custom);
-    return 0;
-}
-
-int kill_maison(pid_t pid, int sig){
-    kill(pid, sig);
     return 0;
 }
 
@@ -83,15 +98,23 @@ int ls(char* path){
     return 0;
 }
 
-int mkdir_maison(const char *pathname, mode_t mode){
-    mkdir(pathname, mode);
+
+
+int tee(char* filename){
+    FILE *fp = fopen(filename, "w");
+    FILE *stdout_bis = fopen("/dev/stdout", "w");
+    char *line = malloc(sizeof(char) * 100);
+    size_t len = 100;
+    while(getline(&line, &len, stdin) != -1){
+        fwrite(line, 1, 100, fp);
+        fprintf(stdout_bis, "%s", line);
+    }
+    stdout = stdout_bis;
+    fclose(stdout_bis);
+    fclose(fp);
     return 0;
 }
 
-int mv (char* source, char* destination){
-    rename(source, destination);
-    return 0;
-}
 
 struct arguments{
     char** arg;
@@ -105,43 +128,42 @@ char* slice(char* chaine, int longueur){
     return chaine_finale;
 }
 
-arguments decomp (char* commande){
+arguments decomp (char* commande ){
     arguments args;
     args.nbarg = 0;
-    args.arg = malloc(sizeof(char*));
-    char* tmp = malloc(sizeof(char*));
+    args.arg = malloc(sizeof(char*)*strlen(commande));
+    char* tmp = malloc(sizeof(char)*strlen(commande));
     strcpy(tmp, commande);
+    printf("%s", tmp);
     char* token = strtok(tmp, " ");
+    printf("%s", token);
     while(token != NULL){
         args.nbarg++;
         args.arg = realloc(args.arg, args.nbarg * sizeof(char*));
-        args.arg[args.nbarg - 1] = malloc(sizeof(char) * strlen(token));
+        args.arg[args.nbarg - 1] = malloc(sizeof(char)*strlen(token));
         strcpy(args.arg[args.nbarg - 1], token);
+        printf("%s", args.arg[args.nbarg - 1]);
         token = strtok(NULL, " ");
+        printf("%s", token);
     }
     return args;
 }
 
-int rm (const char *pathname){
-    rmdir(pathname);
+
+
+
+int main(){
+    echo("test \n");
+    ls(".vscode");
+    //printf("%s %s", args.arg[0], args.arg[1]);
     return 0;
 }
 
-int tee(char* filename){
-    FILE *fp = fopen(filename, "w");
-    FILE *stdout_bis = fopen("/dev/stdout", "w");
-    char *line = malloc(sizeof(char) * 100);
-    size_t len = 100;
-    while(getline(&line, &len, stdin) != -1){
-        fwrite(line, 1, 100, fp);
-        fprintf(stdout_bis, "%s", line);
-    }
-    stdout = stdout_bis;
-    fclose(fp);
-    return 0;
-}
 
-int main()
+
+
+
+int test()
 {
     printf("%s", "Vous pouvez démarrer une ligne de commande. Tapez quit pour arrêter.");
     char* commande = "begin";
