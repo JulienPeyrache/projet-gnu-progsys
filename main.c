@@ -25,7 +25,7 @@ int echo(char *blabla)
 }
 
 //Fonction récursive utile pour la fonction grep
-void parcours(int i, char *chainecar, fp, filtre)
+void parcours(int i, char *chainecar,FILE* fp,char* filtre)
              {
                  if (i < strlen(chainecar))
                  {
@@ -42,8 +42,8 @@ void parcours(int i, char *chainecar, fp, filtre)
                      {
                          fprintf(fp, "%s", chainecar_bis);
                      }
-                     parcours(i + 1, chainecar_bis);
-                     parcours(i + 1, chainecar);
+                     parcours(i + 1, chainecar_bis, fp, filtre);
+                     parcours(i + 1, chainecar, fp, filtre);
                  }
              }
 
