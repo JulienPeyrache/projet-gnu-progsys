@@ -24,8 +24,33 @@ int echo(char *blabla)
     return 0;
 }
 
+//Fonction récursive utile pour la fonction grep
+void parcours(int i, char *chainecar, fp, filtre)
+             {
+                 if (i < strlen(chainecar))
+                 {
+                     char *chainecar_bis = chainecar;
+                     if ((chainecar[i] < 90) && (chainecar[i] > 64))
+                     {
+                         chainecar_bis[i] = chainecar_bis[i] + 32;
+                     }
+                     else if ((chainecar[i] < 122) && (chainecar[i] > 96))
+                     {
+                         chainecar_bis[i] = chainecar_bis[i] - 32;
+                     }
+                     if (strstr(chainecar_bis, filtre) != NULL)
+                     {
+                         fprintf(fp, "%s", chainecar_bis);
+                     }
+                     parcours(i + 1, chainecar_bis);
+                     parcours(i + 1, chainecar);
+                 }
+             }
+
+
+
 int grep(char *filtre, char option)
-{ /*
+{
      // Lire ce qu'il y a dans stdin, filtrer les champs qui nous concernent avec le filtre et les réécrire dans stdout.
      char chaine[100];
      FILE *stdin_custom = fopen("/dev/stdin", "r");
@@ -42,37 +67,17 @@ int grep(char *filtre, char option)
          }
          else if (option == 'i')
          {
-             void parcours(int i, char *chainecar)
-             {
-                 if (i < strlen(chainecar))
-                 {
-                     char *chainecar_bis = chainecar;
-                     if ((chainecar[i] < 90) && (chainecar[i] > 64))
-                     {
-                         chainecar_bis[i] = chainecar_bis[i] + 32;
-                     }
-                     else if ((chainecar[i] < 122) && (chainecar[i] > 96))
-                     {
-                         chainecar_bis[i] = chainecar_bis[i] - 32;
-                     }
-                     if (strstr(chainecar_bis, filtre) != NULL)
-                     {
-                         fprintf(stdout_custom, "%s", chainecar_bis);
-                     }
-                     parcours(i + 1, chainecar_bis);
-                     parcours(i + 1, chainecar);
-                 }
-             }
+             
              if (strstr(chaine, filtre) != NULL)
              {
                  fprintf(stdout_custom, "%s", chaine);
              }
-             parcours(0, chaine);
+             parcours(0, chaine, stdout_custom, filtre);
          }
      }
      fclose(stdin_custom);
      stdout = stdin_custom;
-     fclose(stdout_custom);*/
+     fclose(stdout_custom);
     return 0;
 }
 
@@ -177,9 +182,9 @@ int main2()
 
 int main3()
 {
-    char *commande = malloc(sizeof(char) * 3);
-    commande = "ab";
-    commande = realloc(commande, sizeof(char) * 2);
+    //char *commande = malloc(sizeof(char) * 3);
+    //commande = "ab";
+    //commande = realloc(commande, sizeof(char) * 2);
     return 0;
 }
 
